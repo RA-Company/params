@@ -8,7 +8,15 @@ import (
 )
 
 func TestString(t *testing.T) {
+	type want struct {
+		Value   string
+		Present bool
+	}
 	type Test struct {
+		Field want `json:"field"`
+		Value want `json:"value"`
+	}
+	type result struct {
 		Field String `json:"field"`
 		Value String `json:"value"`
 	}
@@ -24,8 +32,8 @@ func TestString(t *testing.T) {
 			name:  "Valid JSON with quotes",
 			input: `{"field":"test\"Field","value":"test\"Value"}`,
 			want: Test{
-				Field: String{Value: `test"Field`, Present: true},
-				Value: String{Value: `test"Value`, Present: true},
+				Field: want{Value: `test"Field`, Present: true},
+				Value: want{Value: `test"Value`, Present: true},
 			},
 			wantErr: false,
 		},
@@ -33,8 +41,8 @@ func TestString(t *testing.T) {
 			name:  "Valid JSON without quotes",
 			input: `{"field":"testField","value":"testValue"}`,
 			want: Test{
-				Field: String{Value: "testField", Present: true},
-				Value: String{Value: "testValue", Present: true},
+				Field: want{Value: "testField", Present: true},
+				Value: want{Value: "testValue", Present: true},
 			},
 			wantErr: false,
 		},
@@ -49,7 +57,7 @@ func TestString(t *testing.T) {
 			name:    "Null JSON",
 			input:   `{"field":null,"value":null}`,
 			output:  `{"field":"","value":""}`,
-			want:    Test{Field: String{Present: false}, Value: String{Present: false}},
+			want:    Test{Field: want{Present: false}, Value: want{Present: false}},
 			wantErr: false,
 		},
 		{
@@ -69,8 +77,8 @@ func TestString(t *testing.T) {
 			input:  `{"value":"testValue"}`,
 			output: `{"field":"","value":"testValue"}`,
 			want: Test{
-				Field: String{Present: false},
-				Value: String{Value: "testValue", Present: true},
+				Field: want{Present: false},
+				Value: want{Value: "testValue", Present: true},
 			},
 			wantErr: false,
 		},
@@ -79,8 +87,8 @@ func TestString(t *testing.T) {
 			input:  `{"field":"testField"}`,
 			output: `{"field":"testField","value":""}`,
 			want: Test{
-				Field: String{Value: "testField", Present: true},
-				Value: String{Present: false},
+				Field: want{Value: "testField", Present: true},
+				Value: want{Present: false},
 			},
 			wantErr: false,
 		},
@@ -91,16 +99,16 @@ func TestString(t *testing.T) {
 			if tt.output == "" {
 				tt.output = tt.input
 			}
-			var test Test
+			var test result
 			err := json.Unmarshal([]byte(tt.input), &test)
 			if tt.wantErr {
 				require.Error(t, err, "Unmarshal should return an error")
 			} else {
 				require.NoError(t, err, "Unmarshal should not return an error")
-				require.Equal(t, tt.want.Field.Value, test.Field.Value, "Field value should match the input")
-				require.Equal(t, tt.want.Field.Present, test.Field.Present, "Field should be present")
-				require.Equal(t, tt.want.Value.Value, test.Value.Value, "Value should match the input")
-				require.Equal(t, tt.want.Value.Present, test.Value.Present, "Value should be present")
+				require.Equal(t, tt.want.Field.Value, test.Field.Value(), "Field value should match the input")
+				require.Equal(t, tt.want.Field.Present, test.Field.Present(), "Field should be present")
+				require.Equal(t, tt.want.Value.Value, test.Value.Value(), "Value should match the input")
+				require.Equal(t, tt.want.Value.Present, test.Value.Present(), "Value should be present")
 
 				js, err := json.Marshal(test)
 				require.NoError(t, err, "Marshal should not return an error")

@@ -9,7 +9,17 @@ import (
 )
 
 func TestInt(t *testing.T) {
+	type want struct {
+		Value   int
+		Present bool
+	}
+
 	type Test struct {
+		Field want `json:"field"`
+		Value want `json:"value"`
+	}
+
+	type result struct {
 		Field Int `json:"field"`
 		Value Int `json:"value"`
 	}
@@ -25,8 +35,8 @@ func TestInt(t *testing.T) {
 			name:  "Valid JSON with integer",
 			input: `{"field":123,"value":456}`,
 			want: Test{
-				Field: Int{Value: 123, Present: true},
-				Value: Int{Value: 456, Present: true},
+				Field: want{Value: 123, Present: true},
+				Value: want{Value: 456, Present: true},
 			},
 			wantErr: false,
 		},
@@ -35,8 +45,8 @@ func TestInt(t *testing.T) {
 			input:  `{"field":"123","value":"456"}`,
 			output: `{"field":123,"value":456}`,
 			want: Test{
-				Field: Int{Value: 123, Present: true},
-				Value: Int{Value: 456, Present: true},
+				Field: want{Value: 123, Present: true},
+				Value: want{Value: 456, Present: true},
 			},
 			wantErr: false,
 		},
@@ -51,7 +61,7 @@ func TestInt(t *testing.T) {
 			name:    "Null JSON",
 			input:   `{"field":null,"value":null}`,
 			output:  `{"field":0,"value":0}`,
-			want:    Test{Field: Int{Present: false}, Value: Int{Present: false}},
+			want:    Test{Field: want{Present: false}, Value: want{Present: false}},
 			wantErr: false,
 		},
 		{
@@ -77,8 +87,8 @@ func TestInt(t *testing.T) {
 			input:  `{"value":456}`,
 			output: `{"field":0,"value":456}`,
 			want: Test{
-				Field: Int{Present: false},
-				Value: Int{Value: 456, Present: true},
+				Field: want{Present: false},
+				Value: want{Value: 456, Present: true},
 			},
 			wantErr: false,
 		},
@@ -87,8 +97,8 @@ func TestInt(t *testing.T) {
 			input:  `{"field":123}`,
 			output: `{"field":123,"value":0}`,
 			want: Test{
-				Field: Int{Value: 123, Present: true},
-				Value: Int{Present: false},
+				Field: want{Value: 123, Present: true},
+				Value: want{Present: false},
 			},
 			wantErr: false,
 		},
@@ -96,8 +106,8 @@ func TestInt(t *testing.T) {
 			name:  "Min and max int values",
 			input: `{"field":-9223372036854775808,"value":9223372036854775807}`,
 			want: Test{
-				Field: Int{Value: -9223372036854775808, Present: true},
-				Value: Int{Value: 9223372036854775807, Present: true},
+				Field: want{Value: -9223372036854775808, Present: true},
+				Value: want{Value: 9223372036854775807, Present: true},
 			},
 			wantErr: false,
 		},
@@ -108,16 +118,16 @@ func TestInt(t *testing.T) {
 			if tt.output == "" {
 				tt.output = tt.input
 			}
-			var test Test
+			var test result
 			err := json.Unmarshal([]byte(tt.input), &test)
 			if tt.wantErr {
 				require.Error(t, err, "Unmarshal should return an error")
 			} else {
 				require.NoError(t, err, "Unmarshal should not return an error")
-				require.Equal(t, tt.want.Field.Value, test.Field.Value, "Field value should match the input")
-				require.Equal(t, tt.want.Field.Present, test.Field.Present, "Field should be present")
-				require.Equal(t, tt.want.Value.Value, test.Value.Value, "Value should match the input")
-				require.Equal(t, tt.want.Value.Present, test.Value.Present, "Value should be present")
+				require.Equal(t, tt.want.Field.Value, test.Field.Value(), "Field value should match the input")
+				require.Equal(t, tt.want.Field.Present, test.Field.Present(), "Field should be present")
+				require.Equal(t, tt.want.Value.Value, test.Value.Value(), "Value should match the input")
+				require.Equal(t, tt.want.Value.Present, test.Value.Present(), "Value should be present")
 
 				js, err := json.Marshal(test)
 				fmt.Printf("Marshalled JSON: %s\n", string(js))

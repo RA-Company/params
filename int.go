@@ -7,8 +7,8 @@ import (
 )
 
 type Int struct {
-	Value   int  `json:"-"`
-	Present bool `json:"-"` // Present indicates if the integer is present or not
+	value   int  // Value holds the actual integer value
+	present bool // Present indicates if the integer is present or not
 }
 
 // UnmarshalJSON implements custom unmarshalling for the Int type.
@@ -19,8 +19,8 @@ type Int struct {
 // This allows for flexible handling of integer values in JSON payloads.
 func (i *Int) UnmarshalJSON(data []byte) error {
 	if len(data) == 0 || string(data) == "null" {
-		i.Value = 0
-		i.Present = false
+		i.value = 0
+		i.present = false
 		return nil
 	}
 
@@ -35,19 +35,19 @@ func (i *Int) UnmarshalJSON(data []byte) error {
 	var v json.Number
 
 	if err := json.Unmarshal(data, &v); err != nil {
-		i.Value = 0
-		i.Present = false
+		i.value = 0
+		i.present = false
 		return err
 	} else {
 		vv, err := v.Int64()
 		if err != nil {
-			i.Value = 0
-			i.Present = false
+			i.value = 0
+			i.present = false
 			return err
 		}
-		i.Value = int(vv)
+		i.value = int(vv)
 	}
-	i.Present = true
+	i.present = true
 
 	return nil
 }
@@ -58,21 +58,30 @@ func (i *Int) UnmarshalJSON(data []byte) error {
 // Parameters:
 //   - value: The integer value to set for the Int type.
 func (i *Int) Set(value int) {
-	i.Value = value
-	i.Present = true
+	i.value = value
+	i.present = true
 }
 
-// Get retrieves the value of the Int type.
+// Value retrieves the value of the Int type.
 // If the integer is not present, it returns zero.
 // If the integer is present, it returns the Value field.
 //
 // Returns:
 //   - int: The value of the Int type if present, otherwise zero.
-func (i *Int) Get() int {
-	if !i.Present {
+func (i *Int) Value() int {
+	if !i.present {
 		return 0
 	}
-	return i.Value
+	return i.value
+}
+
+// Present checks if the Int type is present in the JSON payload.
+// It returns true if the integer was provided in the JSON payload, otherwise false.
+//
+// Returns:
+//   - bool: True if the integer is present, otherwise false.
+func (i *Int) Present() bool {
+	return i.present
 }
 
 // MarshalJSON implements custom marshalling for the Int type.
@@ -83,5 +92,5 @@ func (i *Int) Get() int {
 //   - []byte: The JSON representation of the Int type.
 //   - error: An error if the marshalling fails, otherwise nil.
 func (i Int) MarshalJSON() ([]byte, error) {
-	return fmt.Appendf(nil, "%d", i.Get()), nil // Marshal the integer value
+	return fmt.Appendf(nil, "%d", i.Value()), nil // Marshal the integer value
 }

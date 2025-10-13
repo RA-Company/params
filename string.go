@@ -7,8 +7,8 @@ import (
 // Structure for handling strings in JSON payloads
 // This structure allows for the presence of a string to be explicitly indicated,
 type String struct {
-	Value   string `json:"-"`
-	Present bool   `json:"-"` // Present indicates if the string is present or not
+	value   string // The actual string value
+	present bool   // Indicates if the string is present in the JSON payload
 }
 
 // UnmarshalJSON implements custom unmarshalling for the String type.
@@ -25,17 +25,17 @@ type String struct {
 //   - error: An error if the unmarshalling fails, otherwise nil.
 func (s *String) UnmarshalJSON(data []byte) error {
 	if len(data) == 0 || string(data) == "null" {
-		s.Value = ""
-		s.Present = false
+		s.value = ""
+		s.present = false
 		return nil
 	}
 
-	if err := json.Unmarshal(data, &s.Value); err != nil {
-		s.Value = ""
-		s.Present = false
+	if err := json.Unmarshal(data, &s.value); err != nil {
+		s.value = ""
+		s.present = false
 		return err
 	}
-	s.Present = true
+	s.present = true
 
 	return nil
 }
@@ -46,8 +46,8 @@ func (s *String) UnmarshalJSON(data []byte) error {
 // Parameters:
 //   - value: The string value to set for the String type.
 func (s *String) Set(value string) {
-	s.Value = value
-	s.Present = true
+	s.value = value
+	s.present = true
 }
 
 // Get retrieves the value of the String type.
@@ -57,10 +57,10 @@ func (s *String) Set(value string) {
 // Returns:
 //   - string: The value of the String type if present, otherwise an empty string.
 func (s *String) Get() string {
-	if !s.Present {
+	if !s.present {
 		return ""
 	}
-	return s.Value
+	return s.value
 }
 
 // MarshalJSON implements custom marshalling for the String type.
@@ -82,9 +82,31 @@ func (s String) MarshalJSON() ([]byte, error) {
 // Returns:
 //   - string: The JSON representation of the String type, or an empty string if marshaling fails.
 func (s *String) GetJSON() string {
-	b, err := json.Marshal(s.Value)
+	b, err := json.Marshal(s.value)
 	if err != nil {
 		return ""
 	}
 	return string(b)
+}
+
+// Present checks if the String type is present in the JSON payload.
+// It returns true if the string was provided in the JSON payload, otherwise false.
+//
+// Returns:
+//   - bool: True if the string is present, otherwise false.
+func (s *String) Present() bool {
+	return s.present
+}
+
+// Value retrieves the actual string value of the String type.
+// If the string is not present, it returns an empty string.
+// If the string is present, it returns the Value field.
+//
+// Returns:
+//   - string: The actual string value if present, otherwise an empty string.
+func (s *String) Value() string {
+	if !s.present {
+		return ""
+	}
+	return s.value
 }

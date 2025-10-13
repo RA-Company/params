@@ -15,8 +15,8 @@ var timeLayouts = []string{
 
 // Time is a wrapper around time. Time that supports null values and multiple JSON formats.
 type Time struct {
-	Value   time.Time `json:"-"`
-	Present bool      `json:"-"` // Present indicates if the time is present or not
+	value   time.Time // Value holds the actual time value
+	present bool      // Present indicates if the time is present or not
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
@@ -28,17 +28,17 @@ type Time struct {
 // Returns:
 //   - error: An error if unmarshaling fails, otherwise nil.
 func (dst *Time) UnmarshalJSON(data []byte) error {
-	dst.Value = time.Time{}
+	dst.value = time.Time{}
 	if len(data) == 0 || string(data) == "null" {
-		dst.Present = false
+		dst.present = false
 		return nil
 	}
 
-	dst.Present = true
+	dst.present = true
 
 	for _, layout := range timeLayouts {
 		if t, err := time.Parse(layout, strings.Trim(string(data), `"`)); err == nil {
-			dst.Value = t
+			dst.value = t
 			return nil
 		}
 	}
@@ -53,10 +53,10 @@ func (dst *Time) UnmarshalJSON(data []byte) error {
 //   - []byte: JSON representation of the time.
 //   - error: An error if marshaling fails, otherwise nil.
 func (dst *Time) MarshalJSON() ([]byte, error) {
-	if !dst.Present {
+	if !dst.present {
 		return []byte("null"), nil
 	}
-	return dst.Value.MarshalJSON()
+	return dst.value.MarshalJSON()
 }
 
 // IsZero checks if the Time is zero or not present.
@@ -64,7 +64,7 @@ func (dst *Time) MarshalJSON() ([]byte, error) {
 // Returns:
 //   - bool: true if the Time is zero or not present, otherwise false.
 func (dst *Time) IsZero() bool {
-	return !dst.Present || dst.Value.IsZero()
+	return !dst.present || dst.value.IsZero()
 }
 
 // Format formats the Time using the provided layout.
@@ -76,10 +76,10 @@ func (dst *Time) IsZero() bool {
 // Returns:
 //   - string: Formatted time string or empty string if not present.
 func (dst *Time) Format(layout string) string {
-	if !dst.Present {
+	if !dst.present {
 		return ""
 	}
-	return dst.Value.Format(layout)
+	return dst.value.Format(layout)
 }
 
 // Equal checks if two Time instances are equal.
@@ -87,8 +87,40 @@ func (dst *Time) Format(layout string) string {
 // Returns:
 //   - bool: true if both Time instances are equal, otherwise false.
 func (dst *Time) String() string {
-	if !dst.Present {
+	if !dst.present {
 		return "null"
 	}
-	return dst.Value.String()
+	return dst.value.String()
+}
+
+// Set sets the value of the Time and marks it as present.
+// This method updates the Value field with the provided time and sets Present to true.
+//
+// Parameters:
+//   - value: The time value to set for the Time type.
+func (dst *Time) Set(value time.Time) {
+	dst.value = value
+	dst.present = true
+}
+
+// Present checks if the Time type is present in the JSON payload.
+// It returns true if the time was provided in the JSON payload, otherwise false.
+//
+// Returns:
+//   - bool: True if the time is present, otherwise false.
+func (dst *Time) Present() bool {
+	return dst.present
+}
+
+// Value retrieves the value of the Time type.
+// If the time is not present, it returns the zero value of time.Time.
+// If the time is present, it returns the Value field.
+//
+// Returns:
+//   - time.Time: The value of the Time type if present, otherwise the zero value of time.Time.
+func (dst *Time) Value() time.Time {
+	if !dst.present {
+		return time.Time{}
+	}
+	return dst.value
 }
