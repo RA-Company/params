@@ -50,19 +50,6 @@ func (s *String) Set(value string) {
 	s.present = true
 }
 
-// Get retrieves the value of the String type.
-// If the string is not present, it returns an empty string.
-// If the string is present, it returns the Value field.
-//
-// Returns:
-//   - string: The value of the String type if present, otherwise an empty string.
-func (s *String) Get() string {
-	if !s.present {
-		return ""
-	}
-	return s.value
-}
-
 // MarshalJSON implements custom marshalling for the String type.
 // It converts the String type to a JSON string representation.
 // If the string is not present, it returns an empty JSON string.
@@ -72,7 +59,7 @@ func (s *String) Get() string {
 //   - []byte: The JSON representation of the String type.
 //   - error: An error if the marshalling fails, otherwise nil.
 func (s String) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.Get())
+	return json.Marshal(s.Value())
 }
 
 // GetJSON returns the JSON representation of the String type.
