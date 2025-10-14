@@ -46,6 +46,32 @@ func (dst *Time) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("invalid time format: %s", string(data))
 }
 
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+// It allows the Time type to be unmarshalled from text representations.
+// This method simply calls UnmarshalJSON with the provided text data.
+//
+// Parameters:
+//   - text: The text data to unmarshal into the Time type.
+//
+// Returns:
+//   - error: An error if the unmarshalling fails, otherwise nil.
+func (dst *Time) UnmarshalText(text []byte) error {
+	return dst.UnmarshalJSON(text)
+}
+
+// UnmarshalParam implements the custom parameter unmarshalling for the Time type.
+// It allows the Time type to be unmarshalled directly from a string parameter.
+// This method simply calls UnmarshalJSON with the provided string data.
+//
+// Parameters:
+//   - param: The string parameter to unmarshal into the Time type.
+//
+// Returns:
+//   - error: An error if the unmarshalling fails, otherwise nil.
+func (dst *Time) UnmarshalParam(param string) error {
+	return dst.UnmarshalJSON([]byte(param))
+}
+
 // MarshalJSON implements the json.Marshaler interface.
 // It returns "null" if the time is not present.
 //

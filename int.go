@@ -52,6 +52,31 @@ func (i *Int) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+// It allows the Int type to be unmarshalled from text representations.
+// This method simply calls UnmarshalJSON with the provided text data.
+//
+// Parameters:
+//   - text: The text data to unmarshal into the Int type.
+//
+// Returns:
+//   - error: An error if the unmarshalling fails, otherwise nil.
+func (i *Int) UnmarshalText(text []byte) error {
+	return i.UnmarshalJSON(text)
+}
+
+// UnmarshalParam is a helper method to unmarshal a string parameter directly.
+// It converts the string parameter to a byte slice and calls UnmarshalJSON.
+//
+// Parameters:
+//   - param: The string parameter to unmarshal into the Int type.
+//
+// Returns:
+//   - error: An error if the unmarshalling fails, otherwise nil.
+func (i *Int) UnmarshalParam(param string) error {
+	return i.UnmarshalJSON([]byte(param))
+}
+
 // Set sets the value of the Int type and marks it as present.
 // This method updates the Value field with the provided integer and sets Present to true.
 //

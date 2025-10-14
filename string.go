@@ -40,6 +40,32 @@ func (s *String) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+// It allows the String type to be unmarshalled from text representations.
+// This method simply calls UnmarshalJSON with the provided text data.
+//
+// Parameters:
+//   - text: The text data to unmarshal into the String type.
+//
+// Returns:
+//   - error: An error if the unmarshalling fails, otherwise nil.
+func (s *String) UnmarshalText(text []byte) error {
+	return s.UnmarshalJSON(text)
+}
+
+// UnmarshalParam implements the custom parameter unmarshalling for the String type.
+// It allows the String type to be unmarshalled directly from a string parameter.
+// This method simply calls UnmarshalJSON with the provided string data.
+//
+// Parameters:
+//   - param: The string parameter to unmarshal into the String type.
+//
+// Returns:
+//   - error: An error if the unmarshalling fails, otherwise nil.
+func (s *String) UnmarshalParam(param string) error {
+	return s.UnmarshalJSON([]byte(param))
+}
+
 // Set sets the value of the String type and marks it as present.
 // This method updates the Value field with the provided string and sets Present to true.
 //
