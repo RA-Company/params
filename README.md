@@ -4,7 +4,8 @@ Simple library for parameter in json that may indecate presence of data
 ## JSON formats
 * Time - Time that supports null values and multiple JSON formats.
 * Int - Int format
-* String - String formt
+* String - String format
+* Bool - Boolean format
 
 ## Used libraries
 * github.com/stretchr/testify - Go code (golang) set of packages that provide many tools for testifying that your code will behave as you intend. (MIT license)
