@@ -20,6 +20,7 @@ func TestTime_UnmarshalJSON(t *testing.T) {
 		{name: "valid time", data: `"2023-10-05T14:48:00Z"`, wantErr: false, present: true, result: time.Date(2023, 10, 5, 14, 48, 0, 0, time.UTC)},
 		{name: "invalid time", data: `"invalid-time"`, wantErr: true, present: true, result: time.Time{}},
 		{name: "empty string", data: "", wantErr: false, present: false, result: time.Time{}},
+		{name: "empty value string", data: `""`, wantErr: false, present: true, result: time.Time{}},
 		{name: "json without quotes", data: `2023-10-05T14:48:00Z`, wantErr: false, present: true, result: time.Date(2023, 10, 5, 14, 48, 0, 0, time.UTC)},
 		{name: "extra whitespace", data: `  "2023-10-05T14:48:00Z"  `, wantErr: true, present: true, result: time.Time{}},
 		{name: "with milliseconds", data: `"2023-10-05T14:48:00.123Z"`, wantErr: false, present: true, result: time.Date(2023, 10, 5, 14, 48, 0, 123000000, time.UTC)},

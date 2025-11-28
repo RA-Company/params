@@ -34,6 +34,11 @@ func (dst *Time) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
+	if string(data) == `""` {
+		dst.present = true
+		return nil
+	}
+
 	dst.present = true
 
 	for _, layout := range timeLayouts {

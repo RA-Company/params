@@ -14,7 +14,7 @@ Simple library for parameter in json that may indecate presence of data
 To update library to the latest version, use go get -u github.com/ra-company/payloads.
 
 # Supported go versions
-We currently support the most recent major Go versions from 1.25.0 onward.
+We currently support the most recent major Go versions from 1.25.4 onward.
 
 # License
 This project is licensed under the terms of the GPL-3.0 license.
