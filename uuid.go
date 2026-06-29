@@ -52,7 +52,7 @@ func (u *UUID) UnmarshalJSON(data []byte) error {
 // Returns:
 //   - error: An error if the unmarshalling fails, otherwise nil.
 func (u *UUID) UnmarshalText(text []byte) error {
-	return u.UnmarshalJSON(text)
+	return u.UnmarshalParam(string(text))
 }
 
 // UnmarshalParam implements the custom parameter unmarshalling for the UUID type.
@@ -65,7 +65,15 @@ func (u *UUID) UnmarshalText(text []byte) error {
 // Returns:
 //   - error: An error if the unmarshalling fails, otherwise nil.
 func (u *UUID) UnmarshalParam(param string) error {
-	return u.UnmarshalJSON([]byte(param))
+	parsed, err := uuid.Parse(param)
+	if err != nil {
+		u.value = uuid.UUID{}
+		u.present = false
+		return err
+	}
+	u.value = parsed
+	u.present = true
+	return nil
 }
 
 // Set sets the value of the UUID type and marks it as present.

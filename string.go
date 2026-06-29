@@ -50,7 +50,9 @@ func (s *String) UnmarshalJSON(data []byte) error {
 // Returns:
 //   - error: An error if the unmarshalling fails, otherwise nil.
 func (s *String) UnmarshalText(text []byte) error {
-	return s.UnmarshalJSON(text)
+	s.value = string(text)
+	s.present = true
+	return nil
 }
 
 // UnmarshalParam implements the custom parameter unmarshalling for the String type.
@@ -63,7 +65,9 @@ func (s *String) UnmarshalText(text []byte) error {
 // Returns:
 //   - error: An error if the unmarshalling fails, otherwise nil.
 func (s *String) UnmarshalParam(param string) error {
-	return s.UnmarshalJSON([]byte(param))
+	s.value = param
+	s.present = true
+	return nil
 }
 
 // Set sets the value of the String type and marks it as present.
