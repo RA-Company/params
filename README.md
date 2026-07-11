@@ -6,6 +6,8 @@ Simple library for parameter in json that may indecate presence of data
 * Int - Int format
 * String - String format
 * Bool - Boolean format
+* Float - Float64 format
+* UUID - UUID format
 
 ## Used libraries
 * github.com/stretchr/testify - Go code (golang) set of packages that provide many tools for testifying that your code will behave as you intend. (MIT license)
